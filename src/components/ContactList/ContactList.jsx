@@ -1,32 +1,19 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { FallingLines } from 'react-loader-spinner';
 import toast, { Toaster } from 'react-hot-toast';
 import {
-  selectContacts,
   selectIsLoading,
   selectIsError,
+  selectFilteredContacts,
 } from '../../redux/contactsSlice';
-import { fetchContacts } from '../../redux/contactsOps';
-import { selectNameFilter } from '../../redux/filtersSlice';
 import Contact from '../Contact/Contact';
 import s from './ContactList.module.css';
 
 const ContactList = () => {
-  const dispatch = useDispatch();
-  const contacts = useSelector(selectContacts);
-  const filter = useSelector(selectNameFilter);
-  const filteredData = contacts
-    ? contacts.filter((contact) =>
-        contact.name.toLowerCase().includes(filter.toLowerCase())
-      )
-    : [];
+  const contacts = useSelector(selectFilteredContacts);
   const isLoading = useSelector(selectIsLoading);
   const isError = useSelector(selectIsError);
-
-  useEffect(() => {
-    dispatch(fetchContacts());
-  }, [dispatch]);
 
   useEffect(() => {
     if (isError) {
@@ -46,9 +33,9 @@ const ContactList = () => {
           />
         )}
       </div>
-      {isError && <Toaster position='bottom-left' reverseOrder={true} />}
+      {isError && <Toaster position='top-right' reverseOrder={false} />}
       <ul className={s.list}>
-        {filteredData.map((contact) => (
+        {contacts.map((contact) => (
           <Contact key={contact.id} contact={contact} {...contact} />
         ))}
       </ul>
